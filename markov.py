@@ -3,15 +3,18 @@ from random import choice
 import sys
 
 
-def open_and_read_file(file_path):
+def open_and_read_files(file_path1, file_path2):
     """Takes file path as string; returns text as string.
 
     Takes a string that is a file path, opens the file, and turns
     the file's contents as one string of text.
     """
 
-    with open(file_path, "r") as word_file:
+    with open(file_path1, "r") as word_file:
         text = word_file.read()
+
+    with open(file_path2, "r") as word_file:
+        text += word_file.read()
 
     return text
 
@@ -88,13 +91,10 @@ input_path2 = sys.argv[2]
 chain_length = int(sys.argv[3])
 
 # Open the file and turn it into one long string
-input_text1 = open_and_read_file(input_path1)
-input_text2 = open_and_read_file(input_path2)
+input_text = open_and_read_files(input_path1, input_path2)
 
 # Get a Markov chain
-chains = make_chains(input_text1, chain_length)
-
-chains.update(make_chains(input_text2, chain_length))
+chains = make_chains(input_text, chain_length)
 
 # Produce random text
 random_text = make_text(chains)
