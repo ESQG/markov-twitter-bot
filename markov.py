@@ -82,14 +82,19 @@ def make_text(chains):
     return " ".join(text)
 
 
-input_path = sys.argv[1]
-chain_length = int(sys.argv[2])
+input_path1 = sys.argv[1]
+input_path2 = sys.argv[2]
+
+chain_length = int(sys.argv[3])
 
 # Open the file and turn it into one long string
-input_text = open_and_read_file(input_path)
+input_text1 = open_and_read_file(input_path1)
+input_text2 = open_and_read_file(input_path2)
 
 # Get a Markov chain
-chains = make_chains(input_text, chain_length)
+chains = make_chains(input_text1, chain_length)
+
+chains.update(make_chains(input_text2, chain_length))
 
 # Produce random text
 random_text = make_text(chains)
