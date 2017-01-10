@@ -1,5 +1,7 @@
 from random import choice
 
+import sys
+
 
 def open_and_read_file(file_path):
     """Takes file path as string; returns text as string.
@@ -14,7 +16,7 @@ def open_and_read_file(file_path):
     return text
 
 
-def make_chains(text_string):
+def make_chains(text_string, chain_length):
     """Takes input text as string; returns _dictionary_ of markov chains.
 
     A chain will be a key that consists of a tuple of (word1, word2)
@@ -30,14 +32,14 @@ def make_chains(text_string):
     chains = {}
     words = text_string.split()
 
-    for index, word in enumerate(words[:-2]):
-        word_tuple = (words[index], words[index + 1])
+    for index, word in enumerate(words[:-chain_length]):
+        word_tuple = tuple(words[index: index + chain_length])
 
         if word_tuple not in chains:
-            chains[word_tuple] = [words[index + 2]]
+            chains[word_tuple] = [words[index + chain_length]]
         else:
-            chains[word_tuple].append(words[index + 2])
-    print chains.keys()[0]
+            chains[word_tuple].append(words[index + chain_length])
+
     return chains
 
 
@@ -55,34 +57,34 @@ def make_text(chains):
 
     start_tuples = make_start_tuples(chains)
 
-    word_pair = choice(start_tuples)
-    text = [word_pair[0], word_pair[1]]
+    word_tuple = choice(start_tuples)
+    text = list(word_tuple)
 
-    while word_pair in chains:
+    while word_tuple in chains:
 
-        next_word = choice(chains[word_pair])
+        next_word = choice(chains[word_tuple])
 
         text.append(next_word)
 
-        word_pair = (word_pair[1], next_word)
+        word_tuple = word_tuple[1:] + (next_word,)
 
         if next_word[-1] == '.' and len(text) > 200:
             break
 
-        if word_pair not in chains and len(text) < 20:
-            word_pair = choice(start_tuples)
-            text.extend(word_pair)
+        if word_tuple not in chains and len(text) < 20:
+            word_tuple = choice(start_tuples)
+            text.extend(word_tuple)
 
     return " ".join(text)
 
 
-input_path = "twain.txt"
+input_path = sys.argv[1]
 
 # Open the file and turn it into one long string
 input_text = open_and_read_file(input_path)
 
 # Get a Markov chain
-chains = make_chains(input_text)
+chains = make_chains(input_text, 3)
 
 # Produce random text
 random_text = make_text(chains)
