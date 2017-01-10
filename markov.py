@@ -32,6 +32,10 @@ def make_chains(text_string, chain_length):
     chains = {}
     words = text_string.split()
 
+    if chain_length < 1:
+        print "Chain length must be at least 1."
+        chain_length = int(raw_input("Please enter an appropriate chain length: "))
+
     for index, word in enumerate(words[:-chain_length]):
         word_tuple = tuple(words[index: index + chain_length])
 
@@ -79,12 +83,13 @@ def make_text(chains):
 
 
 input_path = sys.argv[1]
+chain_length = int(sys.argv[2])
 
 # Open the file and turn it into one long string
 input_text = open_and_read_file(input_path)
 
 # Get a Markov chain
-chains = make_chains(input_text, 3)
+chains = make_chains(input_text, chain_length)
 
 # Produce random text
 random_text = make_text(chains)
