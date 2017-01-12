@@ -15,12 +15,12 @@ def open_and_read_files(list_of_files):
 
     for file_path in list_of_files:
         with open(file_path, "r") as word_file:
-            text += word_file.read()
+            text += word_file.read()+"\n"
 
     return text
 
 
-def make_chains(text_string, chain_length):
+def make_chains(text_string, chain_length): # Far from optimized.
     """Takes input text as string; returns _dictionary_ of markov chains.
 
     A chain will be a key that consists of a tuple of (word1, word2)
@@ -79,14 +79,14 @@ def make_text(chains):
         if next_word[-1] in ".!?" and len(text) > 25:
             break
 
-        if word_tuple not in chains and len(text) < 5:
+        if word_tuple not in chains and len(text) < 3:
             word_tuple = choice(start_tuples)
             text.extend(word_tuple)
 
     return " ".join(text)
 
 def tweet(chains):
-    # Use Python os.environ to get at environmental variables
+    # Use Python os.environ to get at environmental variables.
     # Note: you must run `source secrets.sh` before running this file
     # to make sure these environmental variables are set.
     tweet_contents = make_text(chains)
@@ -101,22 +101,20 @@ def tweet(chains):
         access_token_secret=os.environ['TWITTER_ACCESS_TOKEN_SECRET'],
         )
 
-    # print api.VerifyCredentials()
-
     status = api.PostUpdate(tweet_contents)
     print status.text
 
 
 chain_length = int(sys.argv[-1])
 
-# Open the file and turn it into one long string
-input_text = open_and_read_files(sys.argv[1:-1])
+# Open the file and turn it into one long string.
+input_text = open_and_read_files(sys.argv[1:-1]) 
 
-# Get a Markov chain
+# Get a Markov chain.
 random_content = make_chains(input_text, chain_length)
 
-# Produce random text
+# Produce random text.
 # random_text = make_text(chains)
 
-# Your task is to write a new function tweet, that will take chains as input
+# Your task is to write a new function tweet, that will take chains as input.
 tweet(random_content)
