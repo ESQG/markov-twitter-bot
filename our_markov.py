@@ -4,18 +4,18 @@ import twitter
 import sys
 
 
-def open_and_read_files(file_path1, file_path2):
+def open_and_read_files(list_of_files):
     """Takes file path as string; returns text as string.
 
     Takes a string that is a file path, opens the file, and turns
     the file's contents as one string of text.
     """
 
-    with open(file_path1, "r") as word_file:
-        text = word_file.read()
+    text = ""
 
-    with open(file_path2, "r") as word_file:
-        text += word_file.read()
+    for file_path in list_of_files:
+        with open(file_path, "r") as word_file:
+            text += word_file.read()
 
     return text
 
@@ -107,13 +107,10 @@ def tweet(chains):
     print status.text
 
 
-input_path1 = sys.argv[1]
-input_path2 = sys.argv[2]
-
-chain_length = int(sys.argv[3])
+chain_length = int(sys.argv[-1])
 
 # Open the file and turn it into one long string
-input_text = open_and_read_files(input_path1, input_path2)
+input_text = open_and_read_files(sys.argv[1:-1])
 
 # Get a Markov chain
 random_content = make_chains(input_text, chain_length)
