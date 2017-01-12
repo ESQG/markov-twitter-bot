@@ -1,4 +1,4 @@
 source secrets.sh
 
-python markov.py twain.txt
+python our_markov.py twain.txt gettysburg.txt 2
 

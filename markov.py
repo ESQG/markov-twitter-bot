@@ -56,7 +56,10 @@ def make_text(chains):
         words.append(word)
         key = (key[1], word)
 
-    return " ".join(words)
+    content = " ".join(words)
+    concise_content = content[:140]
+
+    return concise_content
 
 
 def tweet(chains):
@@ -75,7 +78,7 @@ def tweet(chains):
 
     # print api.VerifyCredentials()
 
-    status = api.PostUpdate(tweet_contents[0:140])
+    status = api.PostUpdate(tweet_contents)
     print status.text
 
 # Get the filenames from the user through a command line prompt, ex:

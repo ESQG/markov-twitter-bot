@@ -2,4 +2,3 @@ secrets.sh
 *.pyc
 .idea/
 *.png
-g*.txt
