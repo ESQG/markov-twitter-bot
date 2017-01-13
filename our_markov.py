@@ -76,7 +76,7 @@ def make_text(chains):
 
         word_tuple = word_tuple[1:] + (next_word,)
 
-        if next_word[-1] in ".!?" and len(text) > 25:
+        if ("." in next_word or "?" in next_word or "!" in next_word) and len(text) > 25:
             break
 
         if word_tuple not in chains and len(text) < 3:
