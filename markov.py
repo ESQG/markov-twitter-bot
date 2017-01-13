@@ -1,8 +1,8 @@
-from random import choice
+import random
 import os
 import twitter
 import sys
-
+import numpy as np
 
 def open_and_read_files(list_of_files):
     """Takes file path as string; returns text as string.
@@ -18,6 +18,20 @@ def open_and_read_files(list_of_files):
             text += word_file.read()+"\n"
 
     return text
+
+# def make_chains_one_file(file_path, chain_length):
+#     files_in_directory = next(os.walk('.'))[2]
+#     storage_filename = ".chains-{}-{}".format(chain_length, file_path)
+
+#     if storage_filename in files_in_directory:
+#         return eval(open(storage_filename).read())
+#     else:
+#         chains = make_chains(open(file_path).read(), chain_length)
+
+#         with open(storage_filename, 'w') as storage_file:
+#             storage_file.write(str(chains))
+#         return chains
+# Bad idea!  chains can be way too big to store reasonably!
 
 
 def make_chains(text_string, chain_length): # Far from optimized.
@@ -42,11 +56,34 @@ def make_chains(text_string, chain_length): # Far from optimized.
 
     for index, word in enumerate(words[:-chain_length]):
         word_tuple = tuple(words[index: index + chain_length])
+        next_word = words[index + chain_length]
 
         if word_tuple not in chains:
-            chains[word_tuple] = [words[index + chain_length]]
+            # chains[word_tuple] = [words[index + chain_length]]
+            chains[word_tuple] = {next_word : 1}
         else:
-            chains[word_tuple].append(words[index + chain_length])
+            # chains[word_tuple].append(words[index + chain_length])
+            chains[word_tuple][next_word] = chains[word_tuple].get(next_word, 0) + 1
+
+    for word_tuple in chains:
+        dictionary = chains[word_tuple]
+
+        sorted_words = sorted(dictionary.keys())
+        probabilities = []    # Have to make parallel lists for numpy!
+
+        total_next_words = sum(dictionary.values())  # Cannot be 0.
+        probabilities = []
+
+        for word in sorted_words:
+            occurrences = dictionary[word]
+            probabilities.append(float(occurrences) / total_next_words)
+
+        chains[word_tuple]['probabilities'] = probabilities
+        chains[word_tuple]['choices'] = sorted_words
+        # print word_tuple, probabilities, sorted_words  # DEBUGGING
+
+
+
 
     return chains
 
@@ -65,13 +102,13 @@ def make_text(chains):
 
     start_tuples = make_start_tuples(chains)
 
-    word_tuple = choice(start_tuples)
+    word_tuple = random.choice(start_tuples)
     text = list(word_tuple)
 
     while word_tuple in chains:
 
-        next_word = choice(chains[word_tuple])
-
+        next_word = np.random.choice(chains[word_tuple]['choices'], p=chains[word_tuple]['probabilities'])
+        # print word_tuple, next_word
         text.append(next_word)
 
         word_tuple = word_tuple[1:] + (next_word,)
@@ -80,7 +117,7 @@ def make_text(chains):
             break
 
         if word_tuple not in chains and len(text) < 3:
-            word_tuple = choice(start_tuples)
+            word_tuple = random.choice(start_tuples)
             text.extend(word_tuple)
 
     return " ".join(text)
@@ -104,17 +141,18 @@ def tweet(chains):
     status = api.PostUpdate(tweet_contents)
     print status.text
 
+if __name__ == '__main__':
 
-chain_length = int(sys.argv[-1])
+    chain_length = int(sys.argv[-1])
 
-# Open the file and turn it into one long string.
-input_text = open_and_read_files(sys.argv[1:-1]) 
+    # Open the file and turn it into one long string.
+    input_text = open_and_read_files(sys.argv[1:-1]) 
 
-# Get a Markov chain.
-random_content = make_chains(input_text, chain_length)
+    # Get a Markov chain.
+    random_content = make_chains(input_text, chain_length)
 
-# Produce random text.
-# random_text = make_text(chains)
+    # Produce random text.
+    # random_text = make_text(chains)
 
-# Your task is to write a new function tweet, that will take chains as input.
-tweet(random_content)
+    # Your task is to write a new function tweet, that will take chains as input.
+    tweet(random_content)
