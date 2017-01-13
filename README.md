@@ -23,10 +23,10 @@ For the length and number of files I've provided, 2 is the best; 3 is too inflex
 
 Outputs a tweet after posting it.
 
-$ python our_markov.py tom_sawyer.txt 2
+$ python markov.py tom_sawyer.txt 2
 Tom? Now you get to the judge; but his own clothing forlornly. "I reckon I was so brim-full of exultation that was really worthy the name.
 
 Or:
-$ python our_markov.py gettysburg.txt tom_sawyer.txt 2
+$ python markov.py gettysburg.txt tom_sawyer.txt 2
 
 She makes me feel so bad to think he said in a degree which he thanked the widow hunted for him outside till his ears flapped again.
